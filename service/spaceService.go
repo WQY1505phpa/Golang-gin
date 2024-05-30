@@ -43,3 +43,24 @@ func UpdateSpace(query map[string]interface{},update map[string]interface{}) err
 func DeleteSpace(query map[string]interface{}) error{
 	return models.DeleteSpace(query)
 }
+
+/**
+获取空间列表
+ */
+func GetSpaceList(query map[string]interface{},p int, ps int) ([]models.Space,error){
+	spaces,err := models.GetSpaceList(query,p, ps)
+	if err != nil{
+		return spaces,err
+	}
+	return  spaces,err
+}
+/**
+获取空间总数
+ */
+func GetSpaceCount(query map[string]interface{}) (int, error) {
+	res, err := models.GetSpaceCount(query)
+	if err != nil {
+		return 0, err
+	}
+	return res, nil
+}

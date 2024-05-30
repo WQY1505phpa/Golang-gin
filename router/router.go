@@ -9,6 +9,7 @@ func Router() *gin.Engine {
   r:= gin.Default()
   api := r.Group("/space")
   {
+	  api.GET("/getSpaceInfo",controller.GetSpaceInfo)
 	  api.GET("/getSpaceList",controller.GetSpaceList)
 	  api.POST("/addSpace",controller.AddSpace)
 	  api.POST("/updateSpace",controller.UpdateSpace)

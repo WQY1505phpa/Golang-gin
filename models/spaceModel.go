@@ -9,9 +9,10 @@ const (
 )
 
 type Space struct {
-	Name  string
-	Attr  int
-	State int
+	Id int `json:"id"`
+	Name  string `json:"name"`
+	Attr  int `json:"attr"`
+	State int `json:"state"`
 }
 /**
 获取单条空间数据
@@ -24,6 +25,19 @@ func GetSpaceInfo(query map[string]interface{}) (Space, error) {
 		return *space, result.Error
 	}
 	return *space, nil
+}
+/**
+获取空间列表
+ */
+func GetSpaceList(query map[string]interface{}, p int, ps int) ([]Space, error) {
+	var spaces []Space
+	offset := (p - 1) * ps
+	DB := config.DbHelper
+	result := DB.Table(SpaceTable).Where(query).Offset(offset).Limit(ps).Find(&spaces)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return spaces, nil
 }
 /**
 添加空间
@@ -56,4 +70,15 @@ func DeleteSpace(query map[string]interface{}) error{
 		return result.Error
 	}
 	return nil
+}
+/**
+获取空间总数
+ */
+func GetSpaceCount(query map[string]interface{}) (int, error) {
+	var count int
+	result := config.DbHelper.Table(SpaceTable).Where(query).Count(&count)
+	if result.Error != nil {
+		return 0, result.Error
+	}
+	return count, nil
 }

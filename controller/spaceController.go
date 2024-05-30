@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
+	"wqy/common"
 	"wqy/models"
 	"wqy/service"
 )
@@ -14,7 +15,7 @@ type Space struct {
 /**
 获取单条空间信息
  */
-func GetSpaceList(c *gin.Context) {
+func GetSpaceInfo(c *gin.Context) {
 	SpaceId := c.DefaultQuery("spaceId","0")
 	if SpaceId == "0" {
 		c.JSON(http.StatusOK,gin.H{"error":"spaceId not is empty"})
@@ -55,7 +56,8 @@ func AddSpace(c *gin.Context){
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "添加空间失败"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"message": "空间添加成功"})
+	res := common.JsonRes("200", "空间添加成功", map[string]interface{}{"result": 1})
+	c.JSON(http.StatusOK, res)
 }
 /**
 编辑空间
@@ -80,7 +82,8 @@ func UpdateSpace(c *gin.Context){
 		c.JSON(http.StatusOK,gin.H{"error":"修改失败"})
 		return
 	}
-	c.JSON(http.StatusOK,gin.H{"message":"修改成功"})
+	res := common.JsonRes("200","修改成功", map[string]interface{}{"result":1})
+	c.JSON(http.StatusOK,res)
 }
 /**
 删除空间
@@ -102,5 +105,39 @@ func DeleteSpace(c *gin.Context){
 		c.JSON(http.StatusOK,gin.H{"error":"删除失败"})
 		return
 	}
-	c.JSON(http.StatusOK,gin.H{"message":"删除成功"})
+	res := common.JsonRes("200","删除成功", map[string]interface{}{"result":1})
+	c.JSON(http.StatusOK,res)
+}
+/**
+获取空间列表
+ */
+func GetSpaceList(c *gin.Context) {
+	page := c.DefaultQuery("page", "1")
+	pageSize := c.DefaultQuery("pageSize", "20")
+	query := map[string]interface{}{
+		"state": 1,
+	}
+	p, err := strconv.Atoi(page)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "参数 page 解析错误"})
+		return
+	}
+	ps, err := strconv.Atoi(pageSize)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "参数 pageSize 解析错误"})
+		return
+	}
+	result, err := service.GetSpaceList(query, p, ps)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"error": "数据获取失败"})
+		return
+	}
+	//获取空间总数
+    count,_ := service.GetSpaceCount(query)
+	data := map[string]interface{}{
+		"count":count,
+		"list": result,
+	}
+	res := common.JsonRes("200", "获取成功", data)
+	c.JSON(http.StatusOK, res)
 }
