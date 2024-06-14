@@ -15,5 +15,10 @@ func Router() *gin.Engine {
 	  api.POST("/updateSpace",controller.UpdateSpace)
 	  api.POST("/deleteSpace",controller.DeleteSpace)
   }
+  user := r.Group("/user")
+  {
+	  user.GET("/getUserInfo",controller.GetUserInfo)
+	  user.GET("/getSpaceInfo",controller.GetSpaceInfo)
+  }
   return r
 }
